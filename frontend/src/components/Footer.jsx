@@ -155,13 +155,12 @@ export default function Footer() {
               </p>
               <div className="mt-8 flex gap-3">
                 {[
-                  { label: "Facebook",  char: "f"  },
-                  { label: "Instagram", char: "ig" },
-                  { label: "LinkedIn",  char: "in" },
+                  { label: "Facebook",  char: "fb" , redirect :"https://www.facebook.com/Harithascape/" },
+                  { label: "Instagram", char: "ig" , redirect :"https://www.instagram.com/harithascape/"},
                 ].map((s) => (
                   <a
                     key={s.label}
-                    href="#"
+                    href={s.redirect}
                     aria-label={s.label}
                     className="w-9 h-9 border border-stone-700 flex items-center justify-center text-xs font-mono text-stone-500 hover:border-[#8ABC37] hover:text-[#8ABC37] transition-colors duration-200"
                   >

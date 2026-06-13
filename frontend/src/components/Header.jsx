@@ -56,7 +56,7 @@ export default function Header() {
                 className={`relative px-5 py-2 text-sm uppercase tracking-[0.2em] font-mono transition-colors duration-200 ${
                   active
                     ? "text-[#8ABC37]"
-                    : "text-white/60 hover:text-white"
+                    : "text-white/80 hover:text-white"
                 }`}
               >
                 {link.label}

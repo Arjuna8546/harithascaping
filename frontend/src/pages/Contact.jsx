@@ -87,15 +87,33 @@ function HeroGallery({ images }) {
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const rootRef = useRef(null);
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("https://formbold.com/s/oaYGK", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) throw new Error("Submission failed. Please try again.");
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const heroWords = "Tell us about your site.".split(" ");
@@ -389,12 +407,33 @@ export default function Contact() {
               ) : (
                 <div className="p-8 md:p-10 bg-white h-full">
                   <div className="mb-10 border-b border-stone-200 pb-8">
-                    <p className="text-[9px] uppercase tracking-[0.4em] font-mono text-stone-400 mb-2">
-                      Send a message
+                    {error && (
+                      <p className="text-red-500 text-[10px] uppercase tracking-[0.25em] font-mono text-center mb-3">
+                        {error}
+                      </p>
+                    )}
+
+                    <button
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className="w-full py-5 bg-[#8ABC37] text-green-950 font-black text-sm uppercase tracking-[0.2em] hover:bg-[#9bd146] transition-colors duration-200 flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {loading ? (
+                        <>
+                          <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                          </svg>
+                          Sending…
+                        </>
+                      ) : (
+                        <>Send message <span className="text-base">→</span></>
+                      )}
+                    </button>
+
+                    <p className="text-[9px] uppercase tracking-[0.25em] font-mono text-stone-400 text-center mt-4">
+                      We respond within one business day
                     </p>
-                    <h3 className="text-2xl font-black text-stone-900 uppercase tracking-tight">
-                      What's your project?
-                    </h3>
                   </div>
 
                   <div className="space-y-0">

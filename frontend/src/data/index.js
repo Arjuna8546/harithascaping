@@ -127,21 +127,4 @@ export const BLOGS = [
     In conclusion, professional landscape design is an investment that delivers both immediate and long-term benefits. From enhancing aesthetics and increasing property value to improving functionality, sustainability, and environmental performance, a thoughtfully planned landscape creates lasting value. By combining creativity, technical knowledge, and practical planning, landscape professionals help transform outdoor spaces into beautiful, functional, and sustainable environments that can be enjoyed for many years.
   `,
 },
-
-  {
-    id: 2,
-    title: "Why Micro Irrigation Is Perfect for Home Gardens",
-    date: "28 May 2025",
-
-    author: {
-      name: "Anjali Nair",
-      role: "Irrigation Specialist",
-      image: "/img/authors/anjali.jpg",
-    },
-
-    content: `
-      Micro irrigation delivers water directly to plant roots,
-      reducing evaporation and wastage while promoting healthier growth.
-    `,
-  },
 ];
