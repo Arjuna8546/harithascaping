@@ -674,7 +674,7 @@ export default function About() {
     return () => { ctx.revert(); cancelAnimationFrame(raf); };
   }, []);
 
-  const heroTitle = "25 years in the field, literally.";
+  const heroTitle = "35+ years in Agro-Horticulture consulting.";
   const heroWords = heroTitle.split(" ");
 
   return (
@@ -749,8 +749,7 @@ export default function About() {
             ))}
           </h1>
           <p className="about-hero-sub text-stone-300/80 text-lg leading-relaxed max-w-xl mt-8">
-            A firm of senior agriculture and horticulture professionals, bringing a technically grounded
-            approach to landscaping and farming projects across Kerala.
+            A firm of senior agriculture and horticulture professionals, providing technical support for landscaping and farming projects across Kerala.
           </p>
         </div>
 
@@ -760,7 +759,7 @@ export default function About() {
       {/* ══════════════════════════════════════════════════════════════
           SHOWCASE — Dual-state STACK_CARDS
       ══════════════════════════════════════════════════════════════ */}
-      <section className="showcase-section bg-stone-950 py-0 overflow-hidden">
+      {/* <section className="showcase-section bg-stone-950 py-0 overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 py-12 md:py-16 border-b border-white/10">
           <div className="flex items-center justify-between gap-8">
             <div className="section-divider h-px flex-1 bg-white/10 origin-left hidden lg:block" />
@@ -777,7 +776,7 @@ export default function About() {
         </div>
 
         <DualStateShowcase cards={STACK_CARDS} />
-      </section>
+      </section> */}
 
 
       {/* ══════════════════════════════════════════════════════════════
@@ -793,21 +792,23 @@ export default function About() {
             </span>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid gap-16 items-center">
             <div className="story-text space-y-5">
               <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-black text-stone-900 leading-[1.0] tracking-tight uppercase">
                 A maiden venture,<br />
                 <span className="text-[#8ABC37]">built by people<br />who've done the work.</span>
               </h2>
               <p className="text-stone-600 text-lg leading-relaxed max-w-lg">
-                Haritha Agro Consultants is the first horticulture-based firm in Kerala
-                offering turnkey execution in landscaping, high-tech horticulture and
-                technical solutions for the farming sector.
+                Haritha Agro Consultants is the first horticulture based firm in Kerala offering turnkey execution in landscaping, 
+                high tech horticulture and technical solutions in farming sector. It is a firm founded and managed by professionals in the field of 
+                agriculture and horticulture. It is a maiden venture in the 
+                field set to provide the very best in landscaping, floriculture, and micro irrigation.
               </p>
               <p className="text-stone-500 leading-relaxed max-w-lg">
-                With 25 years of combined experience, the firm is led by senior
-                professionals, working alongside in-house horticulturists and engineers
-                who prepare detailed plans for any area and dimension.
+                Haritha Agro consultants has all the resources to prepare landscaping plans for any area and dimension. 
+                In-house horticulturists after consultations with engineers, prepare detailed plans. 
+                With a combination of high caliber horticulturists, 
+                engineers and well experienced workforce, it guarantees the best services in the profession.
               </p>
               <div className="pt-4">
                 <Link
@@ -816,73 +817,6 @@ export default function About() {
                 >
                   Work with us <span className="text-lg">→</span>
                 </Link>
-              </div>
-            </div>
-
-            <div className="story-panel relative overflow-hidden bg-stone-900 min-h-[420px] md:min-h-[520px] flex flex-col justify-between p-8 md:p-10">
-              <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
-                <svg className="w-full h-full" viewBox="0 0 600 600" preserveAspectRatio="none" aria-hidden="true">
-                  {Array.from({ length: 11 }).map((_, i) => (
-                    <line
-                      key={`story-grid-${i}`}
-                      x1="0"
-                      y1={i * 60}
-                      x2="600"
-                      y2={i * 60}
-                      stroke="white"
-                      strokeWidth="1"
-                    />
-                  ))}
-                  {Array.from({ length: 11 }).map((_, i) => (
-                    <line
-                      key={`story-grid-v-${i}`}
-                      x1={i * 60}
-                      y1="0"
-                      x2={i * 60}
-                      y2="600"
-                      stroke="white"
-                      strokeWidth="1"
-                    />
-                  ))}
-                </svg>
-              </div>
-
-              <p className="absolute -right-3 -top-6 text-[clamp(7rem,16vw,14rem)] font-black leading-none text-white/[0.04] tabular-nums select-none">
-                25
-              </p>
-
-              <div className="relative z-10">
-                <div className="story-panel-line h-px bg-white/15 mb-8" />
-                <p className="story-note text-[#8ABC37]/75 text-[10px] uppercase tracking-[0.4em] font-mono mb-6">
-                  Field practice, not theory
-                </p>
-                <p className="story-note text-white text-[clamp(1.8rem,3vw,3rem)] font-black uppercase leading-[0.95] tracking-tight max-w-[12ch]">
-                  Built around the realities of land, climate and maintenance.
-                </p>
-              </div>
-
-              <div className="relative z-10 grid sm:grid-cols-3 gap-0 border border-white/10">
-                {[
-                  ["01", "Assess", "Read the site before drawing the solution."],
-                  ["02", "Engineer", "Match horticulture with irrigation and structure."],
-                  ["03", "Sustain", "Plan for performance after handover."],
-                ].map(([num, title, desc]) => (
-                  <div key={num} className="story-metric p-5 border-b sm:border-b-0 sm:border-r last:border-r-0 border-white/10">
-                    <p className="text-[#8ABC37] text-[10px] tracking-[0.35em] uppercase font-mono mb-4">
-                      {num}
-                    </p>
-                    <h3 className="text-white font-bold uppercase tracking-[0.12em] text-sm mb-3">
-                      {title}
-                    </h3>
-                    <p className="text-stone-400 text-sm leading-relaxed">
-                      {desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="relative z-10">
-                <div className="story-panel-line h-px bg-white/15 mb-5" />
-                <p className="story-note text-white/50 text-[9px] tracking-[0.35em] uppercase font-mono">Est. 1999 / Kerala, IN</p>
               </div>
             </div>
           </div>
@@ -896,7 +830,7 @@ export default function About() {
       {/* ══════════════════════════════════════════════════════════════
           APPROACH
       ══════════════════════════════════════════════════════════════ */}
-      <section className="approach-section bg-white">
+      {/* <section className="approach-section bg-white">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20">
 
           <div className="flex items-center gap-6 mb-16 border-t border-stone-300 pt-8">
@@ -941,13 +875,13 @@ export default function About() {
           </div>
 
         </div>
-      </section>
+      </section> */}
 
 
       {/* ══════════════════════════════════════════════════════════════
           TECHNICAL PARTNERSHIPS
       ══════════════════════════════════════════════════════════════ */}
-      <section className="partnerships-section bg-white py-28 md:py-36">
+      {/* <section className="partnerships-section bg-white py-28 md:py-36">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20">
 
           <div className="flex items-center gap-6 mb-16 border-t border-stone-300 pt-8">
@@ -986,7 +920,7 @@ export default function About() {
           </div>
 
         </div>
-      </section>
+      </section> */}
 
       {/* ══════════════════════════════════════════════════════════════
           CTA

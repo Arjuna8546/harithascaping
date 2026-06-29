@@ -101,6 +101,97 @@ function HeroGallery({ images }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+   SERVICE IMAGE GALLERY — crossfading slideshow for the services stack
+   Same mechanic as HeroGallery (slow pan + crossfade), sized to fill
+   whatever container it's dropped into. Falls back to a flat gradient
+   if a service has no images yet.
+───────────────────────────────────────────────────────────────────────── */
+function ServiceGallery({ images, interval = 4200, fadeDuration = 1100 }) {
+  const [current, setCurrent] = useState(0);
+  const [next, setNext] = useState(null);
+  const [transitioning, setTransitioning] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (!images || images.length < 2) return;
+
+    timerRef.current = setInterval(() => {
+      setTransitioning(true);
+      setNext((prev) => (current + 1) % images.length);
+    }, interval);
+
+    return () => clearInterval(timerRef.current);
+  }, [current, images, interval]);
+
+  useEffect(() => {
+    if (!transitioning || next === null) return;
+    const t = setTimeout(() => {
+      setCurrent(next);
+      setNext(null);
+      setTransitioning(false);
+    }, fadeDuration);
+    return () => clearTimeout(t);
+  }, [transitioning, next, fadeDuration]);
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="absolute inset-0 bg-gradient-to-br from-green-800 to-emerald-600" />
+    );
+  }
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <div
+        key={`svc-cur-${current}`}
+        className="absolute inset-0"
+        style={{
+          animation: `servicePan ${interval + fadeDuration}ms linear forwards`,
+        }}
+      >
+        <img
+          src={images[current]}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ willChange: "transform" }}
+          onError={(e) => { e.target.style.display = "none"; }}
+        />
+      </div>
+
+      {transitioning && next !== null && (
+        <div
+          key={`svc-next-${next}`}
+          className="absolute inset-0"
+          style={{
+            opacity: 0,
+            animation: `serviceFadeIn ${fadeDuration}ms ease-out forwards`,
+          }}
+        >
+          <img
+            src={images[next]}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={(e) => { e.target.style.display = "none"; }}
+          />
+        </div>
+      )}
+
+      <style>{`
+        @keyframes servicePan {
+          from { transform: scale(1.0); }
+          to   { transform: scale(1.07); }
+        }
+        @keyframes serviceFadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
    Topographic SVG background — used in CTA section
 ───────────────────────────────────────────────────────────────────────── */
 function TopoMap() {
@@ -187,121 +278,62 @@ function TickerStrip({ blogs, onSelect, activeIndex, trackRef }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   3D CARD STACK COMPONENT
-   Used inside the About section's right column.
+   CARD STACK COMPONENT (simplified)
+   Image + name, autoplaying every N seconds via a lightweight crossfade.
+   Only the current + incoming image/text are ever in the DOM.
 ═══════════════════════════════════════════════════════════════════════════ */
-function CardStack({ cards }) {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const isAnimating = useRef(false);
-  const cardRefs = useRef([]);
-  const textRefs = useRef([]);
-  const VISIBLE_BEHIND = 3;
+function CardStack({ cards, interval = 4500, fadeDuration = 700 }) {
+  const [current, setCurrent] = useState(0);
+  const [next, setNext] = useState(null);
+  const [transitioning, setTransitioning] = useState(false);
+  const timerRef = useRef(null);
+  const total = cards.length;
 
-  const getStackProps = (stackPos) => {
-    const scales = [1, 0.965, 0.930, 0.895];
-    const yOffsets = [0, -28, -52, -72];
-    const opacities = [1, 0.85, 0.70, 0.55];
-    return {
-      scale: scales[stackPos] ?? 0.86,
-      y: yOffsets[stackPos] ?? -88,
-      opacity: opacities[stackPos] ?? 0.4,
-      zIndex: 10 - stackPos,
-    };
-  };
+  const goTo = useCallback((idx) => {
+    if (transitioning || idx === current) return;
+    setTransitioning(true);
+    setNext(idx);
+  }, [transitioning, current]);
 
-  const syncStackInstant = useCallback((currentActive) => {
-    cards.forEach((_, i) => {
-      const el = cardRefs.current[i];
-      if (!el) return;
-      const stackPos = ((i - currentActive) % cards.length + cards.length) % cards.length;
-      const visible = stackPos <= VISIBLE_BEHIND;
-      const props = getStackProps(stackPos);
-      gsap.set(el, {
-        scale: props.scale,
-        y: props.y,
-        opacity: visible ? props.opacity : 0,
-        zIndex: props.zIndex,
-        filter: "blur(0px)",
-      });
-      const textEl = textRefs.current[i];
-      if (textEl) gsap.set(textEl, { opacity: stackPos === 0 ? 1 : 0 });
-    });
-  }, [cards]);
+  const advance = (direction) => goTo((current + direction + total) % total);
 
+  /* autoplay — resets cleanly whenever `current` changes, whether that
+     change came from the timer or a manual arrow click */
   useEffect(() => {
-    syncStackInstant(0);
-  }, [syncStackInstant]);
+    if (total < 2) return;
+    timerRef.current = setInterval(() => {
+      setTransitioning(true);
+      setNext((current + 1) % total);
+    }, interval);
+    return () => clearInterval(timerRef.current);
+  }, [current, total, interval]);
 
-  const navigate = useCallback((direction) => {
-    if (isAnimating.current) return;
-    isAnimating.current = true;
+  /* finish the crossfade */
+  useEffect(() => {
+    if (!transitioning || next === null) return;
+    const t = setTimeout(() => {
+      setCurrent(next);
+      setNext(null);
+      setTransitioning(false);
+    }, fadeDuration);
+    return () => clearTimeout(t);
+  }, [transitioning, next, fadeDuration]);
 
-    const total = cards.length;
-    const prevActive = activeIdx;
-    const nextActive = (activeIdx + direction + total) % total;
-
-    const leavingEl = cardRefs.current[prevActive];
-    const leavingTxt = textRefs.current[prevActive];
-
-    const leaveTl = gsap.timeline();
-    leaveTl
-      .to(leavingTxt, { opacity: 0, duration: 0.22, ease: "power2.in" }, 0)
-      .to(leavingEl, {
-        opacity: 0, scale: 0.91, filter: "blur(18px)",
-        duration: 0.42, ease: "power2.in",
-      }, 0);
-
-    gsap.delayedCall(0.18, () => {
-      setActiveIdx(nextActive);
-      cards.forEach((_, i) => {
-        const el = cardRefs.current[i];
-        if (!el) return;
-        const newStackPos = ((i - nextActive) % total + total) % total;
-        const props = getStackProps(newStackPos);
-        const visible = newStackPos <= VISIBLE_BEHIND;
-
-        if (i === nextActive) {
-          gsap.set(el, { filter: "blur(0px)", opacity: 0, zIndex: props.zIndex });
-          gsap.to(el, { scale: 1, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.58, ease: "expo.out" });
-          const textEl = textRefs.current[i];
-          if (textEl) {
-            gsap.set(textEl, { opacity: 0 });
-            gsap.to(textEl, { opacity: 1, duration: 0.5, delay: 0.2, ease: "power2.out" });
-          }
-        } else {
-          gsap.to(el, {
-            scale: visible ? props.scale : 0.84,
-            y: visible ? props.y : -92,
-            opacity: visible ? props.opacity : 0,
-            zIndex: props.zIndex,
-            filter: "blur(0px)",
-            duration: 0.55, ease: "expo.out",
-          });
-          const textEl = textRefs.current[i];
-          if (textEl) gsap.to(textEl, { opacity: 0, duration: 0.15 });
-        }
-      });
-      gsap.delayedCall(0.6, () => { isAnimating.current = false; });
-    });
-  }, [activeIdx, cards]);
+  if (!cards || cards.length === 0) return null;
 
   return (
     <div className="relative flex flex-col items-center gap-6">
-      {/* Counter */}
       <div className="self-end text-stone-400 text-[10px] tracking-[0.4em] uppercase font-mono">
-        {String(activeIdx + 1).padStart(2, "0")} / {String(cards.length).padStart(2, "0")}
+        {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
       </div>
 
-      {/* Stack viewport + arrows row */}
       <div className="flex items-center gap-5 w-full justify-center">
-        {/* Left arrow */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => advance(-1)}
           className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer"
           style={{
             background: "rgba(255,255,255,0.6)",
             border: "1px solid rgba(0,0,0,0.1)",
-            backdropFilter: "blur(12px)",
             boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           }}
           aria-label="Previous card"
@@ -311,56 +343,89 @@ function CardStack({ cards }) {
           </svg>
         </button>
 
-        {/* Stack viewport */}
         <div
-          className="relative"
-          style={{ width: "min(300px, 75vw)", height: "min(420px, 65vh)" }}
+          className="relative rounded-2xl overflow-hidden will-change-transform"
+          style={{
+            width: "min(300px, 75vw)",
+            height: "min(420px, 65vh)",
+            boxShadow: "0 20px 56px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08)",
+          }}
         >
-          {cards.map((card, i) => (
+          <div className="absolute inset-0 bg-gradient-to-br from-green-800 to-emerald-600">
+            <img
+              key={`cur-${current}`}
+              src={cards[current].src}
+              alt={cards[current].name}
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => { e.target.style.display = "none"; }}
+            />
+            {transitioning && next !== null && (
+              <img
+                key={`next-${next}`}
+                src={cards[next].src}
+                alt={cards[next].name}
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ opacity: 0, animation: `cardFadeIn ${fadeDuration}ms ease-out forwards` }}
+                onError={(e) => { e.target.style.display = "none"; }}
+              />
+            )}
+          </div>
+
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.2) 100%)" }}
+          />
+
+          {/* ── Name / role overlay, crossfades alongside the image ── */}
+          <div className="absolute top-0 left-0 right-0 p-6 pointer-events-none">
             <div
-              key={i}
-              ref={(el) => { cardRefs.current[i] = el; }}
-              className="absolute inset-0 rounded-2xl overflow-hidden will-change-transform"
-              style={{
-                transformOrigin: "center bottom",
-                boxShadow: "0 20px 56px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08)",
-              }}
+              key={`txt-cur-${current}`}
+              style={transitioning ? { animation: `cardFadeOut ${fadeDuration}ms ease-out forwards` } : undefined}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-green-800 to-emerald-600">
-                <img
-                  src={card.src}
-                  alt={card.name}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => { e.target.style.display = "none"; }}
-                />
-              </div>
-              <div className="absolute inset-0"
-                style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.2) 100%)" }} />
+              {/* <p className="text-white/60 text-[9px] tracking-[0.35em] uppercase font-mono mb-2">
+                Featured project
+              </p> */}
+              <h3 className="text-white text-lg font-black leading-tight tracking-tight mb-1">
+                {cards[current].name}
+              </h3>
+              {/* {cards[current].role && (
+                <p className="text-white/70 text-sm font-light">{cards[current].role}</p>
+              )} */}
+            </div>
+
+            {transitioning && next !== null && (
               <div
-                ref={(el) => { textRefs.current[i] = el; }}
-                className="absolute top-0 left-0 right-0 p-6"
-                style={{ opacity: i === 0 ? 1 : 0 }}
+                key={`txt-next-${next}`}
+                className="absolute top-6 left-6 right-6"
+                style={{ opacity: 0, animation: `cardFadeIn ${fadeDuration}ms ease-out forwards` }}
               >
                 <p className="text-white/60 text-[9px] tracking-[0.35em] uppercase font-mono mb-2">
                   Featured project
                 </p>
                 <h3 className="text-white text-lg font-black leading-tight tracking-tight mb-1">
-                  {card.name}
+                  {cards[next].name}
                 </h3>
-                <p className="text-white/70 text-sm font-light">{card.role}</p>
+                {cards[next].role && (
+                  <p className="text-white/70 text-sm font-light">{cards[next].role}</p>
+                )}
               </div>
-            </div>
-          ))}
+            )}
+          </div>
+
+          <style>{`
+            @keyframes cardFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes cardFadeOut { from { opacity: 1; } to { opacity: 0; } }
+          `}</style>
         </div>
 
-        {/* Right arrow */}
         <button
-          onClick={() => navigate(1)}
+          onClick={() => advance(1)}
           className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer"
           style={{
             background: "rgba(255,255,255,0.6)",
             border: "1px solid rgba(0,0,0,0.1)",
-            backdropFilter: "blur(12px)",
             boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           }}
           aria-label="Next card"
@@ -375,7 +440,8 @@ function CardStack({ cards }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SERVICES CAROUSEL COMPONENT
+   SERVICES CAROUSEL COMPONENT (legacy — kept but no longer rendered below;
+   replaced on the page by ServicesStack, see further down)
 ═══════════════════════════════════════════════════════════════════════════ */
 function ServicesStrip({ services }) {
   const wrapperRef = useRef(null);
@@ -593,12 +659,104 @@ function ServicesStrip({ services }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   SERVICES STACK COMPONENT
+   Same stacking/pin mechanic as the Projects section: left panel carries
+   number + name + description only, right panel is a crossfading image
+   gallery (ServiceGallery) cycling through that service's photos.
+   Expects each entry in SERVICES to optionally provide an `images: []`
+   array; falls back to a single `img` field, then to a flat gradient.
+═══════════════════════════════════════════════════════════════════════════ */
+function ServicesStack({ services }) {
+  return (
+    <section className="bg-stone-900">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 py-8 border-b border-white/10">
+        <div className="flex items-center justify-between">
+          <span className="services-label text-stone-400 text-[10px] tracking-[0.4em] uppercase font-mono">
+            03 / What we do
+          </span>
+          {/* <Link to="/services"
+            className="text-stone-400 text-[10px] tracking-[0.4em] uppercase font-mono hover:text-[#8ABC37] transition-colors">
+            View all →
+          </Link> */}
+        </div>
+      </div>
+      <div className="services-pin-wrap relative h-screen min-h-[620px] overflow-hidden">
+        {services.map((s, i) => {
+          const images = s.images || (s.img ? [s.img] : []);
+          return (
+            <div key={s.title}
+              className="service-stack-card absolute inset-0 will-change-transform [will-change:transform,opacity] backface-hidden"
+              data-service-index={i}
+              style={{ zIndex: i + 1 }}>
+
+              {/* ── MOBILE ── */}
+              <div className="lg:hidden relative h-full w-full overflow-hidden bg-stone-900">
+                <ServiceGallery images={images} />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/70 to-stone-900/30" />
+                <div className="absolute inset-0 flex flex-col justify-between p-6">
+                  <p className="text-[clamp(4rem,18vw,8rem)] font-black text-white/10 leading-none tabular-nums select-none">
+                    {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <div>
+                    <h3 className="text-[clamp(1.6rem,6vw,2.5rem)] font-black text-white uppercase tracking-tight leading-none mb-3">
+                      {s.title}
+                    </h3>
+                    {s.desc && (
+                      <p className="text-stone-300 text-sm leading-relaxed mb-6 max-w-sm">{s.desc}</p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      {services.map((_, dotIdx) => (
+                        <div key={dotIdx}
+                          className={`h-px transition-all duration-300 ${dotIdx === i ? "w-8 bg-[#8ABC37]" : "w-4 bg-white/20"}`} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── DESKTOP ── */}
+              <div className="hidden lg:flex h-full flex-row bg-stone-900">
+                <div className="w-[42%] flex flex-col justify-between p-8 md:p-12 lg:p-16 border-r border-white/8">
+                  <div>
+                    <p className="text-[clamp(4rem,10vw,10rem)] font-black text-white/8 leading-none tabular-nums select-none">
+                      {String(i + 1).padStart(2, "0")}
+                    </p>
+                  </div>
+                  <div className="pb-4">
+                    <h3 className="text-[clamp(1.5rem,3vw,3rem)] font-black text-white uppercase tracking-tight leading-none mb-4">
+                      {s.title}
+                    </h3>
+                    {s.desc && (
+                      <p className="text-stone-400 text-sm leading-relaxed max-w-sm">{s.desc}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {services.map((_, dotIdx) => (
+                      <div key={dotIdx}
+                        className={`h-px transition-all duration-300 ${dotIdx === i ? "w-8 bg-[#8ABC37]" : "w-4 bg-white/20"}`} />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex-1 relative overflow-hidden">
+                  <ServiceGallery images={images} />
+                  <div className="absolute inset-0 bg-gradient-to-r from-stone-900/40 via-transparent to-transparent" />
+                </div>
+              </div>
+
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    HOME COMPONENT
 ═══════════════════════════════════════════════════════════════════════════ */
 export default function Home() {
   const rootRef = useRef(null);
   const tickerRef = useRef(null);
-  const heroWords = "We design the ground your project grows on.".split(" ");
   const navigate = useNavigate();
 
   /* ── Scroll to top when this page loads (strict) ── */
@@ -645,7 +803,7 @@ export default function Home() {
 
   /* ── Ticker click: go to the journal page ── */
   const handleTickerSelect = () => {
-    navigate("/gallery");
+    navigate("/blogs");
   };
 
   useEffect(() => {
@@ -653,7 +811,7 @@ export default function Home() {
 
     const ctx = gsap.context(() => {
 
-      /* ── HERO: word entrance ── */
+      /* ── HERO: wordmark entrance ── */
       gsap.fromTo(".hero-word",
         { yPercent: 120, opacity: 0 },
         { yPercent: 0, opacity: 1, duration: 1.1, ease: "expo.out", stagger: 0.055, delay: 0.2, clearProps: "transform,opacity" }
@@ -706,6 +864,65 @@ export default function Home() {
       gsap.from(".projects-label", {
         y: 30, opacity: 0, duration: 0.9, ease: "expo.out", clearProps: "transform,opacity",
         scrollTrigger: { trigger: ".projects-pin-wrap", start: "top 85%", once: true },
+      });
+
+      /* ── SERVICES: stacking scroll pin (same mechanic as Projects) ── */
+      const serviceCards = gsap.utils.toArray(".service-stack-card");
+      const totalServiceCards = serviceCards.length;
+      if (totalServiceCards > 0) {
+        gsap.set(serviceCards, {
+          autoAlpha: 0,
+          yPercent: 100,
+          scale: 1,
+          force3D: true,
+        });
+        gsap.set(serviceCards[0], {
+          autoAlpha: 1,
+          yPercent: 0,
+          scale: 1,
+        });
+
+        if (totalServiceCards > 1) {
+          const servicesTl = gsap.timeline({
+            defaults: { duration: 0.78, ease: "power3.inOut" },
+            scrollTrigger: {
+              trigger: ".services-pin-wrap",
+              start: "top top",
+              end: () => `+=${Math.max(window.innerHeight * 0.9, 620) * (totalServiceCards - 1)}`,
+              scrub: 0.7,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              snap: {
+                snapTo: 1 / (totalServiceCards - 1),
+                duration: { min: 0.18, max: 0.36 },
+                delay: 0.04,
+                ease: "power2.out",
+              },
+            },
+          });
+
+          serviceCards.forEach((card, i) => {
+            if (i === totalServiceCards - 1) return;
+            const next = serviceCards[i + 1];
+            const step = i;
+
+            servicesTl
+              .to(card, { yPercent: -12, scale: 0.965, autoAlpha: 0.78 }, step)
+              .fromTo(
+                next,
+                { yPercent: 100, autoAlpha: 1, scale: 1.015 },
+                { yPercent: 0, autoAlpha: 1, scale: 1 },
+                step
+              )
+              .set(card, { autoAlpha: 0 }, step + 0.78);
+          });
+        }
+      }
+
+      gsap.from(".services-label", {
+        y: 30, opacity: 0, duration: 0.9, ease: "expo.out", clearProps: "transform,opacity",
+        scrollTrigger: { trigger: ".services-pin-wrap", start: "top 85%", once: true },
       });
 
       /* ── CTA parallax ── */
@@ -808,31 +1025,79 @@ export default function Home() {
         )}
 
         {/* ── Hero headline + CTA ── */}
-        <div className="hero-headline relative z-10 px-6 md:px-12 lg:px-20 pb-20 pt-40">
+        <div className="hero-headline relative z-10 px-6 md:px-12 lg:px-20 pb-20 pt-40 ">
+          {/* Wordmark fonts:
+              — "Haritha" uses Harabara Mais (Bold), a commercial display font.
+                It is NOT on Google Fonts/any free CDN — you need to own a license
+                and drop the actual font files into /public/fonts/ with these exact
+                names (or update the src paths below to match what you have):
+                  /public/fonts/HarabaraMais-Bold.woff2
+                  /public/fonts/HarabaraMais-Bold.woff
+                Until those files exist, it silently falls back to a bold
+                geometric sans so the layout doesn't break.
+              — "Agro- Consultants" uses Times New Roman, which is a system font
+                pre-installed on Windows/most OSes — no import needed, but it WILL
+                render as a generic serif (e.g. Liberation Serif) on systems that
+                don't have Times New Roman, such as most Linux machines/ChromeOS. */}
+          <style>{`
+            @font-face {
+              font-family: 'Harabara Mais';
+              src: url('/fonts/HarabaraMais-Bold.woff2') format('woff2'),
+                   url('/fonts/HarabaraMais-Bold.woff') format('woff');
+              font-weight: 700;
+              font-style: normal;
+              font-display: swap;
+            }
+          `}</style>
+
           <div className="overflow-hidden mb-3">
-            <p className="text-[#8ABC37]/70 text-xs tracking-[0.4em] uppercase font-mono">— Haritha Agro Consultants</p>
+            {/* <p className="text-[#8ABC37]/70 text-xs tracking-[0.4em] uppercase font-mono">— Haritha Agro Consultants</p> */}
           </div>
-          <h1 className="text-[clamp(2rem,6vw,6rem)] font-black text-white leading-[0.93] tracking-tight uppercase max-w-[16ch]">
-            {heroWords.map((word, i) => (
-              <span key={i} className="inline-block overflow-hidden align-bottom mr-[0.25em]">
-                <span className="hero-word inline-block will-change-transform">{word}</span>
+          <h1 className="leading-none tracking-tight w-fit">
+            {/* Wordmark — text, not image */}
+            <span className="block overflow-hidden">
+              <span
+                className="hero-word block will-change-transform"
+                style={{
+                  fontFamily: "'Harabara Mais', 'Montserrat', 'Arial Black', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "clamp(6.75rem, 9vw, 9rem)",
+                  lineHeight: 0.85,
+                  color: "#8ABC37",
+                }}
+              >
+                Haritha
               </span>
-            ))}
+            </span>
+            <span className="block overflow-hidden text-right">
+              <span
+                className="hero-word inline-block will-change-transform"
+                style={{
+                  fontFamily: "'Times New Roman', Times, serif",
+                  fontWeight: 400,
+                  fontSize: "clamp(1.1rem, 2vw, 2rem)",
+                  letterSpacing: "0.12em",
+                  color: "#c4bba1",
+                }}
+              >
+                Agro- Consultants
+              </span>
+            </span>
           </h1>
           <div className="mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-8 max-w-7xl">
             <p className="hero-sub text-stone-300/80 text-lg leading-relaxed max-w-md">
-              Kerala's first horticulture-based firm offering turnkey solutions
+              Kerala's horticulture-based firm offering turnkey solutions
               in landscaping, high-tech horticulture & farm consultancy.
             </p>
             <div className="hero-btns flex items-center gap-4 shrink-0">
               <Link to="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#8ABC37] text-green-950 font-bold text-sm uppercase tracking-[0.12em] hover:bg-[#9bd146] transition-colors">
+                className="inline-flex items-center gap-2 px-8 py-4 border border-white/25 text-white text-sm uppercase tracking-[0.12em] hover:border-[#8ABC37]/60 hover:text-[#8ABC37] transition-colors">
                 Start a project <span className="text-base">→</span>
               </Link>
-              <Link to="/services"
+              {/* <Link to="/services"
                 className="inline-flex items-center gap-2 px-8 py-4 border border-white/25 text-white text-sm uppercase tracking-[0.12em] hover:border-[#8ABC37]/60 hover:text-[#8ABC37] transition-colors">
                 Our work
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
@@ -849,7 +1114,7 @@ export default function Home() {
         activeIndex={-1}
         trackRef={tickerRef}
       />
-      
+
 
 
       {/* ══════════════════════════════════════════════════════════════
@@ -873,24 +1138,24 @@ export default function Home() {
             <div className="lg:pr-[420px]">
 
               <h2 className="about-heading text-[clamp(2rem,4.5vw,4rem)] font-black text-stone-900 leading-[1.0] tracking-tight uppercase mb-10">
-                Kerala's first<br />
-                horticulture-based<br />
+                Kerala's<br />
+                horticulture<br />
                 <span className="text-[#8ABC37]">turnkey firm.</span>
               </h2>
 
               <div className="about-body-text space-y-5">
                 <p className="text-stone-600 text-lg leading-relaxed max-w-lg">
-                  Founded and managed by professionals in agriculture and
-                  horticulture, Haritha Agro Consultants prepares landscaping
-                  plans for any area and dimension.
+                  Haritha Agro Consultants is a group of professional agricultural experts 
+                  involved in the planning and turnkey execution of landscaping and farming 
+                  projects in Kerala with 35+ years of experience in the field.
                 </p>
-                <p className="text-stone-500 leading-relaxed max-w-lg">
+                {/* <p className="text-stone-500 leading-relaxed max-w-lg">
                   Our in-house horticulturists work alongside engineers to
                   develop detailed site plans. We follow a professional approach
                   across consultancy, turnkey execution, management and
                   post-harvest support — backed by 25 years of combined field
                   experience.
-                </p>
+                </p> */}
                 <div className="pt-4">
                   <Link
                     to="/about"
@@ -903,7 +1168,7 @@ export default function Home() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 border border-stone-300 mt-14">
                 {[
-                  { value: 25, suffix: "+", label: "Years in the field" },
+                  { value: 35, suffix: "+", label: "Years in the field" },
                   { value: 140, suffix: "", label: "Projects delivered" },
                   { value: 7, suffix: "", label: "Disciplines" },
                   { value: 14, suffix: "", label: "Districts served" },
@@ -962,7 +1227,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════════════
           SECTION 4 · PROJECTS — Stacking overlapping cards
       ══════════════════════════════════════════════════════════════ */}
-      <section className="bg-stone-900">
+      {/* <section className="bg-stone-900">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 py-8 border-b border-white/10">
           <div className="flex items-center justify-between">
             <span className="projects-label text-stone-400 text-[10px] tracking-[0.4em] uppercase font-mono">
@@ -978,10 +1243,10 @@ export default function Home() {
           {PROJECTS.map((p, i) => (
             <div key={p.client}
               className="project-stack-card absolute inset-0 will-change-transform"
-              style={{ zIndex: i + 1 }}>
+              style={{ zIndex: i + 1 }}> */}
 
-              {/* ── MOBILE ── */}
-              <div className="lg:hidden relative h-full w-full overflow-hidden">
+      {/* ── MOBILE ── */}
+      {/* <div className="lg:hidden relative h-full w-full overflow-hidden">
                 <img
                   src={p.img}
                   alt={p.client}
@@ -1023,10 +1288,10 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              {/* ── DESKTOP ── */}
-              <div className="hidden lg:flex h-full flex-row bg-stone-900">
+      {/* ── DESKTOP ── */}
+      {/* <div className="hidden lg:flex h-full flex-row bg-stone-900">
                 <div className="w-[42%] flex flex-col justify-between p-8 md:p-12 lg:p-16 border-r border-white/8">
                   <div>
                     <p className="text-[clamp(4rem,10vw,10rem)] font-black text-white/8 leading-none tabular-nums select-none">
@@ -1072,12 +1337,14 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* ══════════════════════════════════════════════════════════════
-          SECTION 3 · SERVICES CAROUSEL
+          SECTION 3 · SERVICES — Stacking overlapping cards
+          (same mechanic as Projects: number + name + description on the
+          left, a crossfading image gallery on the right)
       ══════════════════════════════════════════════════════════════ */}
-      <ServicesStrip services={SERVICES} />
+      <ServicesStack services={SERVICES} />
 
       {/* ══════════════════════════════════════════════════════════════
           SECTION 5 · CTA — Map parallax

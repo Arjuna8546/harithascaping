@@ -1,47 +1,83 @@
 export const NAV_LINKS = [
   { id: "home",     label: "Home",       path: "/" },
   { id: "about",    label: "About Us",   path: "/about" },
-  { id: "services", label: "Services",   path: "/services" },
-  { id: "projects", label: "Projects",   path: "/projects" },
   { id: "blogs",  label: "Blogs",    path: "/blogs" },
   { id: "contact",  label: "Contact Us", path: "/contact" },
 ];
+
+
+
 
 export const SERVICES = [
   {
     code: "GL",
     title: "Gardening & Landscaping",
-    desc: "Site analysis, planting design and full execution for homes, resorts and institutions — from lawns and ornamental beds to complete outdoor living spaces.",
+    desc: "Digital survey, AutoCAD layout, planting plan, hardscaping, pop-up irrigation, and turnkey automation execution of lawn grass, trees, shrubs, and flowers.",
+    images: [
+      "/img/project-1.jpg",
+      "/img/project-2.jpg",
+      "/img/project-3.jpg",
+    ],
   },
   {
     code: "FD",
-    title: "Farm Development & Management",
-    desc: "End-to-end planning and running of commercial farms, including layout, crop selection, labour management and seasonal planning.",
+    title: "Farm Consultancy",
+    desc: "Survey, digital survey, planning plans, hi-tech systems, micro-irrigation, automation, crop selection, pest and disease control, and management support.",
+    images: [
+      "/img/project-1.jpg",
+      "/img/project-2.jpg",
+      "/img/project-3.jpg",
+    ],
   },
   {
     code: "FL",
     title: "Floriculture",
-    desc: "Cut-flower and ornamental plant production systems, from poly house setup to harvest and post-harvest handling.",
+    desc: "Technical support for cut flower and ornamental plant production, and polyhouse farming.",
+    images: [
+      "/img/project-1.jpg",
+      "/img/project-2.jpg",
+      "/img/project-3.jpg",
+    ],
   },
   {
     code: "MI",
-    title: "Landscape & Micro Irrigation",
-    desc: "Drip and sprinkler systems designed for water efficiency, integrated into the landscape plan from the ground up.",
+    title: "Micro-Irrigation & Pop-Up Sprinkler",
+    desc: "Design and turnkey execution of pop-up sprinkler irrigation in landscaping, as well as drip and other micro-systems in agricultural farms.",
+    images: [
+      "/img/project-1.jpg",
+      "/img/project-2.jpg",
+      "/img/project-3.jpg",
+    ],
   },
   {
     code: "ST",
     title: "Sports Turfing",
     desc: "Turf selection, ground preparation and maintenance programmes for grounds that need to perform under heavy use.",
+    images: [
+      "/img/project-1.jpg",
+      "/img/project-2.jpg",
+      "/img/project-3.jpg",
+    ],
   },
   {
     code: "HF",
     title: "Hi-Tech Farming",
     desc: "Poly houses, fertigation systems and controlled-environment techniques for higher yield and consistent quality.",
+    images: [
+      "/img/project-1.jpg",
+      "/img/project-2.jpg",
+      "/img/project-3.jpg",
+    ],
   },
   {
-    code: "OF",
-    title: "Organic Food Production",
-    desc: "Chemical-free cultivation practices and certification support for growers moving toward organic output.",
+    code: "DPR",
+    title: "Detailed Project Report",
+    desc: "Preparation of Detailed Project Reports (DPRs) for integrated farm projects, farm tourism, value addition, processing units, and related activities.",
+    images: [
+      "/img/project-1.jpg",
+      "/img/project-2.jpg",
+      "/img/project-3.jpg",
+    ],
   },
 ];
 
@@ -76,8 +112,8 @@ export const PROJECTS = [
 ];
 
 export const HERO_GALLERY = [
-  "/img/hero_poster.jpg",
-  "/img/hero_poster1.jpg",
+  "/img/hero_poster4.jpg",
+  "/img/hero_poster2.jpg",
 ];
 
 

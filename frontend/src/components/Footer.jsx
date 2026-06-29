@@ -35,7 +35,6 @@ export default function Footer() {
               {[
                 { label: "Facebook",  char: "f"  },
                 { label: "Instagram", char: "ig" },
-                { label: "LinkedIn",  char: "in" },
               ].map((s) => (
                 <a
                   key={s.label}
@@ -60,9 +59,7 @@ export default function Footer() {
               <ul className="space-y-2.5">
                 {[
                   { label: "About",    path: "/about"    },
-                  { label: "Services", path: "/services"  },
-                  { label: "Projects", path: "/projects"  },
-                  { label: "Gallery",  path: "/gallery"   },
+                  { label: "blogs",  path: "/gallery"   },
                   { label: "Contact",  path: "/contact"   },
                 ].map((l) => (
                   <li key={l.path}>
@@ -120,9 +117,6 @@ export default function Footer() {
             <p className="text-[9px] uppercase tracking-[0.25em] font-mono text-stone-700">
               © {new Date().getFullYear()} Haritha Agro Consultants
             </p>
-            <p className="text-[9px] uppercase tracking-[0.25em] font-mono text-stone-700">
-              Est. 1999
-            </p>
           </div>
 
         </div>
@@ -136,7 +130,7 @@ export default function Footer() {
           <div className="grid grid-cols-4 border-b border-stone-800">
 
             {/* Col 1 — Brand + tagline */}
-            <div className="py-14 pr-10 border-r border-stone-800">
+            <div className="py-14 pr-10 border-r border-stone-950">
               <Link to="/" className="group flex items-center mb-6">
                 <img
                   src="/img/logo.png"
@@ -151,7 +145,7 @@ export default function Footer() {
                 />
               </Link>
               <p className="text-stone-500 text-sm leading-relaxed max-w-[24ch]">
-                Kerala's first horticulture-based turnkey firm. Est. 1999.
+                Kerala's horticulture turnkey firm.
               </p>
               <div className="mt-8 flex gap-3">
                 {[
@@ -172,7 +166,7 @@ export default function Footer() {
 
             {/* Col 2 — Services */}
             <div className="py-14 px-10 border-r border-stone-800">
-              <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-stone-600 mb-6">
+              {/* <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-stone-600 mb-6">
                 Services
               </p>
               <ul className="space-y-3">
@@ -189,7 +183,7 @@ export default function Footer() {
                     </Link>
                   </li>
                 ))}
-              </ul>
+              </ul> */}
             </div>
 
             {/* Col 3 — Navigation */}
@@ -200,9 +194,7 @@ export default function Footer() {
               <ul className="space-y-3">
                 {[
                   { label: "About Us",  path: "/about"    },
-                  { label: "Services",  path: "/services"  },
-                  { label: "Projects",  path: "/projects"  },
-                  { label: "Gallery",   path: "/gallery"   },
+                  { label: "Blogs",   path: "/gallery"   },
                   { label: "Contact",   path: "/contact"   },
                 ].map((l) => (
                   <li key={l.path}>
@@ -263,9 +255,6 @@ export default function Footer() {
           <div className="py-6 flex items-center justify-between gap-2">
             <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-stone-700">
               © {new Date().getFullYear()} Haritha Agro Consultants
-            </p>
-            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-stone-700">
-              Kerala · 8–13°N / 74–78°E
             </p>
           </div>
 
