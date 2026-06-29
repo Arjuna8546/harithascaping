@@ -10,9 +10,24 @@ function HeroGallery({ images }) {
   const [current, setCurrent] = useState(0);
   const [next, setNext] = useState(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
+
   const timerRef = useRef(null);
+
   const INTERVAL = 5000;
   const FADE_DUR = 1200;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const getImage = (image) =>
+    isDesktop ? image.desktop : image.mobile;
 
   useEffect(() => {
     if (!images || images.length < 2) return;
@@ -30,11 +45,13 @@ function HeroGallery({ images }) {
 
   useEffect(() => {
     if (!transitioning || next === null) return;
+
     const t = setTimeout(() => {
       setCurrent(next);
       setNext(null);
       setTransitioning(false);
     }, FADE_DUR);
+
     return () => clearTimeout(t);
   }, [transitioning, next]);
 
@@ -45,10 +62,12 @@ function HeroGallery({ images }) {
       <div
         key={`cur-${current}`}
         className="absolute inset-0"
-        style={{ animation: `heroPan ${INTERVAL + FADE_DUR}ms linear forwards` }}
+        style={{
+          animation: `heroPan ${INTERVAL + FADE_DUR}ms linear forwards`,
+        }}
       >
         <img
-          src={images[current]}
+          src={getImage(images[current])}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover"
@@ -60,10 +79,13 @@ function HeroGallery({ images }) {
         <div
           key={`next-${next}`}
           className="absolute inset-0"
-          style={{ opacity: 0, animation: `heroFadeIn ${FADE_DUR}ms ease-out forwards` }}
+          style={{
+            opacity: 0,
+            animation: `heroFadeIn ${FADE_DUR}ms ease-out forwards`,
+          }}
         >
           <img
-            src={images[next]}
+            src={getImage(images[next])}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover"
@@ -76,6 +98,7 @@ function HeroGallery({ images }) {
           from { transform: scale(1.0); }
           to   { transform: scale(1.07); }
         }
+
         @keyframes heroFadeIn {
           from { opacity: 0; }
           to   { opacity: 1; }

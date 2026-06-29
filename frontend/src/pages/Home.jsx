@@ -16,40 +16,53 @@ function HeroGallery({ images }) {
   const [current, setCurrent] = useState(0);
   const [next, setNext] = useState(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
   const timerRef = useRef(null);
-  const INTERVAL = 5000;   // time each image shows (ms)
-  const FADE_DUR = 1200;   // crossfade duration (ms)
+
+  const INTERVAL = 5000;
+  const FADE_DUR = 1200;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!images || images.length < 2) return;
 
     timerRef.current = setInterval(() => {
       setTransitioning(true);
-      setNext((prev) => {
-        const nextIdx = (current + 1) % images.length;
-        return nextIdx;
-      });
+      setNext((current + 1) % images.length);
     }, INTERVAL);
 
     return () => clearInterval(timerRef.current);
   }, [current, images]);
 
-  // When transition fires, after fade completes, swap current → next
   useEffect(() => {
     if (!transitioning || next === null) return;
+
     const t = setTimeout(() => {
       setCurrent(next);
       setNext(null);
       setTransitioning(false);
     }, FADE_DUR);
+
     return () => clearTimeout(t);
   }, [transitioning, next]);
 
-  if (!images || images.length === 0) return null;
+  if (!images?.length) return null;
+
+  const getImage = (item) =>
+    isDesktop ? item.desktop : item.mobile;
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Current image — always visible, zooms slowly */}
+      {/* Current image */}
       <div
         key={`cur-${current}`}
         className="absolute inset-0"
@@ -58,7 +71,7 @@ function HeroGallery({ images }) {
         }}
       >
         <img
-          src={images[current]}
+          src={getImage(images[current])}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover"
@@ -66,7 +79,7 @@ function HeroGallery({ images }) {
         />
       </div>
 
-      {/* Next image — fades in during transition */}
+      {/* Next image */}
       {transitioning && next !== null && (
         <div
           key={`next-${next}`}
@@ -77,7 +90,7 @@ function HeroGallery({ images }) {
           }}
         >
           <img
-            src={images[next]}
+            src={getImage(images[next])}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover"
@@ -85,12 +98,12 @@ function HeroGallery({ images }) {
         </div>
       )}
 
-      {/* Keyframe definitions injected once */}
       <style>{`
         @keyframes heroPan {
-          from { transform: scale(1.0); }
+          from { transform: scale(1); }
           to   { transform: scale(1.07); }
         }
+
         @keyframes heroFadeIn {
           from { opacity: 0; }
           to   { opacity: 1; }
@@ -99,7 +112,6 @@ function HeroGallery({ images }) {
     </div>
   );
 }
-
 /* ─────────────────────────────────────────────────────────────────────────
    SERVICE IMAGE GALLERY — crossfading slideshow for the services stack
    Same mechanic as HeroGallery (slow pan + crossfade), sized to fill
@@ -1075,7 +1087,7 @@ export default function Home() {
                 style={{
                   fontFamily: "'Times New Roman', Times, serif",
                   fontWeight: 400,
-                  fontSize: "clamp(1.1rem, 2vw, 2rem)",
+                  fontSize: "clamp(1.6rem, 2.2vw, 2.2rem)",
                   letterSpacing: "0.12em",
                   color: "#c4bba1",
                 }}

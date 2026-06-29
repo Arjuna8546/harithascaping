@@ -17,31 +17,49 @@ function HeroGallery({ images }) {
   const [current, setCurrent] = useState(0);
   const [next, setNext] = useState(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
+
   const timerRef = useRef(null);
+
   const INTERVAL = 5000;
   const FADE_DUR = 1200;
 
+  // Detect screen size
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Helper to choose correct image
+  const getImageSrc = (image) =>
+    isDesktop ? image.desktop : image.mobile;
+
+  // Slideshow timer
   useEffect(() => {
     if (!images || images.length < 2) return;
 
     timerRef.current = setInterval(() => {
       setTransitioning(true);
-      setNext(() => {
-        const nextIdx = (current + 1) % images.length;
-        return nextIdx;
-      });
+      setNext(() => (current + 1) % images.length);
     }, INTERVAL);
 
     return () => clearInterval(timerRef.current);
   }, [current, images]);
 
+  // Complete fade transition
   useEffect(() => {
     if (!transitioning || next === null) return;
+
     const t = setTimeout(() => {
       setCurrent(next);
       setNext(null);
       setTransitioning(false);
     }, FADE_DUR);
+
     return () => clearTimeout(t);
   }, [transitioning, next]);
 
@@ -49,14 +67,16 @@ function HeroGallery({ images }) {
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Current image — always visible, zooms slowly */}
+      {/* Current image */}
       <div
         key={`cur-${current}`}
         className="absolute inset-0"
-        style={{ animation: `heroPan ${INTERVAL + FADE_DUR}ms linear forwards` }}
+        style={{
+          animation: `heroPan ${INTERVAL + FADE_DUR}ms linear forwards`,
+        }}
       >
         <img
-          src={images[current]}
+          src={getImageSrc(images[current])}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover"
@@ -64,15 +84,18 @@ function HeroGallery({ images }) {
         />
       </div>
 
-      {/* Next image — fades in during transition */}
+      {/* Next image */}
       {transitioning && next !== null && (
         <div
           key={`next-${next}`}
           className="absolute inset-0"
-          style={{ opacity: 0, animation: `heroFadeIn ${FADE_DUR}ms ease-out forwards` }}
+          style={{
+            opacity: 0,
+            animation: `heroFadeIn ${FADE_DUR}ms ease-out forwards`,
+          }}
         >
           <img
-            src={images[next]}
+            src={getImageSrc(images[next])}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover"
@@ -82,12 +105,21 @@ function HeroGallery({ images }) {
 
       <style>{`
         @keyframes heroPan {
-          from { transform: scale(1.0); }
-          to   { transform: scale(1.07); }
+          from {
+            transform: scale(1);
+          }
+          to {
+            transform: scale(1.07);
+          }
         }
+
         @keyframes heroFadeIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
       `}</style>
     </div>
@@ -793,18 +825,18 @@ export default function About() {
           </div>
 
           <div className="grid gap-16 items-center">
-            <div className="story-text space-y-5">
+            <div className="story-text space-y-5 max-w-5xl">
               <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-black text-stone-900 leading-[1.0] tracking-tight uppercase">
                 A maiden venture,<br />
                 <span className="text-[#8ABC37]">built by people<br />who've done the work.</span>
               </h2>
-              <p className="text-stone-600 text-lg leading-relaxed max-w-lg">
+              <p className="text-stone-600 text-lg leading-relaxed">
                 Haritha Agro Consultants is the first horticulture based firm in Kerala offering turnkey execution in landscaping, 
                 high tech horticulture and technical solutions in farming sector. It is a firm founded and managed by professionals in the field of 
                 agriculture and horticulture. It is a maiden venture in the 
                 field set to provide the very best in landscaping, floriculture, and micro irrigation.
               </p>
-              <p className="text-stone-500 leading-relaxed max-w-lg">
+              <p className="text-stone-500 leading-relaxed">
                 Haritha Agro consultants has all the resources to prepare landscaping plans for any area and dimension. 
                 In-house horticulturists after consultations with engineers, prepare detailed plans. 
                 With a combination of high caliber horticulturists, 

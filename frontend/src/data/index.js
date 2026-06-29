@@ -14,9 +14,8 @@ export const SERVICES = [
     title: "Gardening & Landscaping",
     desc: "Digital survey, AutoCAD layout, planting plan, hardscaping, pop-up irrigation, and turnkey automation execution of lawn grass, trees, shrubs, and flowers.",
     images: [
-      "/img/project-1.jpg",
-      "/img/project-2.jpg",
-      "/img/project-3.jpg",
+      "/img/service-1-1.webp",
+      "/img/service-1-2.webp",
     ],
   },
   {
@@ -24,9 +23,8 @@ export const SERVICES = [
     title: "Farm Consultancy",
     desc: "Survey, digital survey, planning plans, hi-tech systems, micro-irrigation, automation, crop selection, pest and disease control, and management support.",
     images: [
-      "/img/project-1.jpg",
-      "/img/project-2.jpg",
-      "/img/project-3.jpg",
+      "/img/service-2-1.webp",
+      "/img/service-2-2.webp",
     ],
   },
   {
@@ -34,9 +32,8 @@ export const SERVICES = [
     title: "Floriculture",
     desc: "Technical support for cut flower and ornamental plant production, and polyhouse farming.",
     images: [
-      "/img/project-1.jpg",
-      "/img/project-2.jpg",
-      "/img/project-3.jpg",
+      "/img/service-3-1.webp",
+      "/img/service-3-2.webp",
     ],
   },
   {
@@ -44,9 +41,8 @@ export const SERVICES = [
     title: "Micro-Irrigation & Pop-Up Sprinkler",
     desc: "Design and turnkey execution of pop-up sprinkler irrigation in landscaping, as well as drip and other micro-systems in agricultural farms.",
     images: [
-      "/img/project-1.jpg",
-      "/img/project-2.jpg",
-      "/img/project-3.jpg",
+      "/img/service-4-1.webp",
+      "/img/service-4-2.webp",
     ],
   },
   {
@@ -54,9 +50,7 @@ export const SERVICES = [
     title: "Sports Turfing",
     desc: "Turf selection, ground preparation and maintenance programmes for grounds that need to perform under heavy use.",
     images: [
-      "/img/project-1.jpg",
-      "/img/project-2.jpg",
-      "/img/project-3.jpg",
+      "/img/service-5-1.webp",
     ],
   },
   {
@@ -64,9 +58,8 @@ export const SERVICES = [
     title: "Hi-Tech Farming",
     desc: "Poly houses, fertigation systems and controlled-environment techniques for higher yield and consistent quality.",
     images: [
-      "/img/project-1.jpg",
-      "/img/project-2.jpg",
-      "/img/project-3.jpg",
+      "/img/service-6-1.webp",
+      "/img/service-6-2.webp",
     ],
   },
   {
@@ -74,9 +67,7 @@ export const SERVICES = [
     title: "Detailed Project Report",
     desc: "Preparation of Detailed Project Reports (DPRs) for integrated farm projects, farm tourism, value addition, processing units, and related activities.",
     images: [
-      "/img/project-1.jpg",
-      "/img/project-2.jpg",
-      "/img/project-3.jpg",
+      "/img/service-7-1.webp",
     ],
   },
 ];
@@ -112,20 +103,25 @@ export const PROJECTS = [
 ];
 
 export const HERO_GALLERY = [
-  "/img/hero_poster4.jpg",
-  "/img/hero_poster2.jpg",
+  {
+    mobile: "/img/hero_poster1.1.webp",
+    desktop: "/img/hero_poster1.2.webp",
+  },
+  {
+    mobile: "/img/hero_poster2.1.webp",
+    desktop: "/img/hero_poster2.2.webp",
+  },
 ];
 
 
 export const STACK_CARDS = [
-  { src: "/img/stack_img_1.jpg", name: "Lush Garden Terrace", role: "Residential · Kochi" },
-  { src: "/img/stack_img_2.jpg", name: "Corporate Green Wall", role: "Commercial · Thiruvananthapuram" },
-  { src: "/img/stack_img_3.jpg", name: "Rooftop Farm", role: "High-Tech Horticulture · Calicut" },
-  { src: "/img/stack_img_4.jpg", name: "Heritage Grounds", role: "Restoration · Thrissur" },
-  { src: "/img/stack_img_5.jpg", name: "Waterfront Promenade", role: "Public Landscaping · Alappuzha" },
-  { src: "/img/stack_img_6.jpg", name: "Bio-Intensive Farm", role: "Farm Consultancy · Palakkad" },
+  { src: "/img/service-1-2.webp", name: "Villa Lawn & Planting Plan", role: "Gardening & Landscaping · Kochi" },
+  { src: "/img/service-2-1.webp", name: "Digital Farm Survey", role: "Farm Consultancy · Palakkad" },
+  { src: "/img/service-3-2.webp", name: "Polyhouse Flower Farm", role: "Floriculture · Calicut" },
+  { src: "/img/service-4-1.webp", name: "Pop-Up Sprinkler Lawn", role: "Micro-Irrigation · Thrissur" },
+  { src: "/img/service-5-1.webp", name: "Football Ground Turf", role: "Sports Turfing · Thiruvananthapuram" },
+  { src: "/img/service-6-1.webp", name: "Fertigation Control Unit", role: "Hi-Tech Farming · Alappuzha" },
 ];
-
 export const BLOGS = [
   {
   id: 1,
