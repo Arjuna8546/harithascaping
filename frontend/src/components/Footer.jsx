@@ -33,12 +33,12 @@ export default function Footer() {
             {/* Social icons — compact */}
             <div className="flex gap-2">
               {[
-                { label: "Facebook",  char: "f"  },
-                { label: "Instagram", char: "ig" },
+                { label: "Facebook",  char: "fb" , redirect :"https://www.facebook.com/Harithascape/" },
+                { label: "Instagram", char: "ig" , redirect :"https://www.instagram.com/harithascape/"},
               ].map((s) => (
                 <a
                   key={s.label}
-                  href="#"
+                  href={s.redirect}
                   aria-label={s.label}
                   className="w-8 h-8 border border-stone-700 flex items-center justify-center text-[10px] font-mono text-stone-500 hover:border-[#8ABC37] hover:text-[#8ABC37] transition-colors duration-200"
                 >

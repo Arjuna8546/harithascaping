@@ -745,12 +745,12 @@ export default function Gallery() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute top-8 right-8 z-10 flex items-center gap-2">
+        {/* <div className="absolute top-8 right-8 z-10 flex items-center gap-2">
           <div className="w-5 h-5 rounded-full border border-[#8ABC37]/40 flex items-center justify-center">
             <div className="w-1 h-1 rounded-full bg-[#8ABC37]/60" />
           </div>
           <span className="text-[#8ABC37]/50 text-[10px] tracking-[0.3em] uppercase font-mono">Scroll</span>
-        </div>
+        </div> */}
 
         {/* Article count badge */}
         {/* <div className="absolute top-8 left-6 md:left-12 lg:left-20 z-10">

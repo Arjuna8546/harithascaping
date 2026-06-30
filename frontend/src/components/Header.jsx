@@ -114,7 +114,7 @@ export default function Header() {
               <Link
                 key={link.id}
                 to={link.path}
-                className={`flex items-center justify-between py-5 border-b border-white/8 text-sm uppercase tracking-[0.25em] font-mono transition-colors duration-200 ${
+                className={`flex items-center justify-between py-5  border-white/8 text-sm uppercase tracking-[0.25em] font-mono transition-colors duration-200 ${
                   active ? "text-[#8ABC37]" : "text-white/60 hover:text-white"
                 }`}
               >

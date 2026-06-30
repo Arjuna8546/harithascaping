@@ -287,7 +287,7 @@ export default function Contact() {
         </div>
 
         {/* Scroll indicator — top-right, same as Services */}
-        <div className="absolute top-8 right-8 z-10 flex items-center gap-2">
+        {/* <div className="absolute top-8 right-8 z-10 flex items-center gap-2">
           <div className="w-5 h-5 rounded-full flex items-center justify-center"
             style={{ border: "1px solid rgba(138,188,55,0.4)" }}>
             <div className="w-1 h-1 rounded-full"
@@ -295,7 +295,7 @@ export default function Contact() {
           </div>
           <span className="text-[10px] tracking-[0.3em] uppercase font-mono"
             style={{ color: "rgba(138,188,55,0.5)" }}>Scroll</span>
-        </div>
+        </div> */}
 
         {/* Content */}
         <div className="contact-hero-content relative z-10 px-6 md:px-12 lg:px-20 pb-20 pt-40">

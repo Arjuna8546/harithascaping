@@ -759,12 +759,12 @@ export default function About() {
         {/* end .about-hero-bg */}
 
         {/* ── Scroll indicator ── */}
-        <div className="absolute top-8 right-8 z-10 flex items-center gap-2">
+        {/* <div className="absolute top-8 right-8 z-10 flex items-center gap-2">
           <div className="w-5 h-5 rounded-full border border-[#8ABC37]/40 flex items-center justify-center">
             <div className="w-1 h-1 rounded-full bg-[#8ABC37]/60" />
           </div>
           <span className="text-[#8ABC37]/50 text-[10px] tracking-[0.3em] uppercase font-mono">Scroll</span>
-        </div>
+        </div> */}
 
         {/* ── Hero headline + sub ── */}
         <div className="about-hero-content relative z-10 px-6 md:px-12 lg:px-20 pb-20 pt-40">
