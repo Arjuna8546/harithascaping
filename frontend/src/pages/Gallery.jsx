@@ -369,7 +369,7 @@ function BlogCarousel({ blogs, externalIndex, onIndexChange }) {
             {/* Author chip — bottom overlay (image panel) */}
             {hasAuthor && (
               <div className="absolute bottom-6 right-6 flex items-center gap-3 bg-black/40 backdrop-blur-sm px-3 py-2 border border-white/10">
-                <img
+                {/* <img
                   src={post.author.image}
                   alt={post.author.name}
                   className="w-7 h-7 rounded-full object-cover bg-green-800"
@@ -382,7 +382,7 @@ function BlogCarousel({ blogs, externalIndex, onIndexChange }) {
                   <p className="text-white/85 text-[10px] uppercase tracking-[0.2em] font-mono leading-none">
                     {post.author.name}
                   </p>
-                </div>
+                </div> */}
               </div>
             )}
           </div>
