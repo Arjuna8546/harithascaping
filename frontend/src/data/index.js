@@ -33,7 +33,6 @@ export const SERVICES = [
     desc: "Technical support for cut flower and ornamental plant production, and polyhouse farming.",
     images: [
       "/img/service-3-1.webp",
-      "/img/service-3-2.webp",
     ],
   },
   {
@@ -117,7 +116,7 @@ export const HERO_GALLERY = [
 export const STACK_CARDS = [
   { src: "/img/service-1-2.webp", name: "Villa Lawn & Planting Plan", role: "Gardening & Landscaping · Kochi" },
   { src: "/img/service-2-1.webp", name: "Digital Farm Survey", role: "Farm Consultancy · Palakkad" },
-  { src: "/img/service-3-2.webp", name: "Polyhouse Flower Farm", role: "Floriculture · Calicut" },
+  { src: "/img/service-3-1.webp", name: "Polyhouse Flower Farm", role: "Floriculture · Calicut" },
   { src: "/img/service-4-1.webp", name: "Pop-Up Sprinkler Lawn", role: "Micro-Irrigation · Thrissur" },
   { src: "/img/service-5-1.webp", name: "Football Ground Turf", role: "Sports Turfing · Thiruvananthapuram" },
   { src: "/img/service-6-1.webp", name: "Fertigation Control Unit", role: "Hi-Tech Farming · Alappuzha" },

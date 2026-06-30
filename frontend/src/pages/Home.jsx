@@ -413,15 +413,15 @@ function CardStack({ cards, interval = 4500, fadeDuration = 700 }) {
                 className="absolute top-6 left-6 right-6"
                 style={{ opacity: 0, animation: `cardFadeIn ${fadeDuration}ms ease-out forwards` }}
               >
-                <p className="text-white/60 text-[9px] tracking-[0.35em] uppercase font-mono mb-2">
+                {/* <p className="text-white/60 text-[9px] tracking-[0.35em] uppercase font-mono mb-2">
                   Featured project
-                </p>
+                </p> */}
                 <h3 className="text-white text-lg font-black leading-tight tracking-tight mb-1">
                   {cards[next].name}
                 </h3>
-                {cards[next].role && (
+                {/* {cards[next].role && (
                   <p className="text-white/70 text-sm font-light">{cards[next].role}</p>
-                )}
+                )} */}
               </div>
             )}
           </div>
